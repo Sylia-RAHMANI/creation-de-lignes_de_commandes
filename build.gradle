@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+
+    id 'jacoco'
+
+    id 'application'
+}
+
+
+
+defaultTasks 'clean', 'test', 'run', 'jacocoTestReport'
+
+repositories {
+    mavenCentral();
+}
+
+sourceCompatibility = 14
+
+dependencies {
+    implementation("org.slf4j:slf4j-api:2.0.0-alpha1")
+    implementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
+    implementation('com.beust:jcommander:1.78')
+    implementation('com.google.inject:guice:5.0.0-BETA-1')
+    implementation('org.apache.tika:tika-core:1.24.1')
+    implementation('org.apache.tika:tika-parsers:1.24.1')
+    implementation('commons-beanutils:commons-beanutils:1.9.4')
+    implementation('org.apache.commons:commons-configuration2:2.7')
+    implementation files("libs/generators.jar")
+    implementation("com.github.jai-imageio:jai-imageio-jpeg2000:1.3.0")
+    implementation('org.xerial:sqlite-jdbc:3.32.3.2')
+    implementation("org.junit.platform:junit-platform-launcher:1.7.0")
+    implementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-runner:1.7.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-engine:1.7.0")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-core:2.13.3")
+    testRuntimeOnly("org.apache.logging.log4j:log4j-jul:2.13.3")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    ignoreFailures = true
+    systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
+}
+
+application {
+    // Define the main class for the application.
+    this.setMainClassName('client.App');
+}
+
+jar {
+    from(configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'MACA-CC2',
+                'Implementation-Version': archiveVersion,
+                'Built-By': 'Modelisation architecturale et patrons de conception',
+                'Built-JDK': System.getProperty('java.version'),
+                'Built-Date': new Date(),
+                'Main-Class': this.getMainClassName();
+    }
+}

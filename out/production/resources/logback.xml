@@ -1,0 +1,40 @@
+<configuration debug="false">
+
+    <!-- Stop logback output log at application start-->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.log</file>
+        <encoder>
+            <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%coloredLevel %date{ISO8601, Europe/Paris} %logger{15} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <!-- Stop commons-beanutils annoying error log which has no impact on commons-configuration2  -->
+    <logger name=" org.apache.commons.beanutils.*" level="ERROR" />
+
+    <!--
+    <logger name="console.logger" level="OFF" >
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    -->
+
+    <root level="INFO">
+        <appender-ref ref="ASYNCFILE" />
+    </root>
+
+</configuration>
